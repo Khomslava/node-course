@@ -1,56 +1,34 @@
-// const http = require('http');
-//
-// const hostname ="127.0.0.1";
-// const port = "3000";
-//
-// const server = http.createServer((req, res) => {
-//     res.statusCode =200;
-//     res.setHeader('Content-Type', 'text/plain');
-//     res.end('Hello world\n');
-// });
-//
-// server.listen(port, hostname, () => {
-//     console.log(`Server running ${hostname}:${port}`);
-// });
-
-// const express = require('express')
-// const app = express()
-// const port = 3000
-//
-// app.get('/', (req, res) => res.send('Hello World!!!!!!'))
-// app.get('/text', (req, res) => res.send('TEST!!!'))
-//
-// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-
 const Koa = require('koa');
 const Router = require('koa-router');
+const bodyParser = require('koa-bodyparser');
+
 const app = new Koa();
 const router = new Router();
 
 router
     .get('/',  (ctx, next) => {
-        console.log(ctx);
-        ctx.body = 'Hello world!';
+        ctx.body = 'Hello world!!!';
     })
     .post('/users', async (ctx, next) => {
-        console.log(ctx);
-        let arr = [];
+        const name = ctx.request.body.name;
 
-        await new Promise((resolve, reject) => {
-            ctx.req.on('data', (data) => {
-                arr.push(data);
-            })
+        const user = {
+            id: 1,
+            name: name
+        };
 
-            ctx.req.on('end', () => {
-                ctx.body = JSON.parse(arr);
-                resolve();
-            })
-        })
-
+        ctx.body =  user;
     });
 
 app
+    .use(bodyParser())
     .use(router.routes())
     .use(router.allowedMethods());
 
+
 app.listen(3000);
+
+process.on('SIGINT', () => {
+    console.log('Received SIGINT!!!');
+    process.exit();
+});
